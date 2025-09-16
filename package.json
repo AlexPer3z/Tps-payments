@@ -2,6 +2,7 @@
   "name": "tepes-payments",
   "version": "1.0.0",
   "description": "Backend para pagos con Mercado Pago",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -20,7 +21,9 @@
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
     "express": "^5.1.0",
-    "mercadopago": "^2.9.0"
+    "mercadopago": "^2.9.0",
+    "node-fetch": "^3.3.2"
   }
 }
