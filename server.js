@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -79,6 +80,20 @@ app.post("/create_preference", async (req, res) => {
 
 // Webhook para recibir notificaciones de pago
 app.post("/mp_webhook", async (req, res) => {
+  const mpSignature = req.headers["x-meli-signature"];
+  const body = JSON.stringify(req.body);
+
+  // Verificar webhook usando la clave secreta
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.MP_SECRET) // <-- clave secreta
+    .update(body)
+    .digest("hex");
+
+  if (mpSignature !== expectedSignature) {
+    console.log("Webhook no válido");
+    return res.status(401).send("No autorizado");
+  }
+
   const { type, data } = req.body;
 
   if (type === "payment") {
@@ -122,5 +137,8 @@ app.post("/mp_webhook", async (req, res) => {
 
   res.status(200).send("OK");
 });
+
+// Clave secreta de Mercado Pago directamente (opcional si no querés usar .env)
+process.env.MP_SECRET = "f90c1b370fdb95a3fa4acefb037fc1f63f6621522e0ae0b1af49a2fa6998694b";
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
