@@ -1,0 +1,98 @@
+[
+  {
+    "materia": "Contabilidad Financiera I",
+    "enunciado": "La empresa Alfa S.A. inició sus operaciones el 1 de enero. Durante el mes realizó distintas operaciones que deben ser registradas en los libros contables.",
+    "consignas": [
+      "Registrar las operaciones en el libro diario.",
+      "Pasar los asientos al libro mayor.",
+      "Elaborar el balance de sumas y saldos."
+    ],
+    "pdf": "pdfs/contabilidad-costos.pdf",
+    "tp": "tps/contabilidad-costos.pdf",
+    "precio": 35.0
+  },
+  {
+    "materia": "Contabilidad de Costos",
+    "enunciado": "La empresa Beta produce un solo producto y utiliza un sistema de costos por procesos.",
+    "consignas": [
+      "Calcular el costo unitario de producción.",
+      "Determinar el costo de los productos terminados.",
+      "Elaborar un informe de costos de producción."
+    ],
+   "pdf": "pdfs/contabilidad-costos.pdf",
+   "tp": "tps/contabilidad-costos.pdf",
+    "precio": 10.0
+  },
+  {
+    "materia": "Contabilidad Intermedia",
+    "enunciado": "La empresa Gamma adquirió un préstamo bancario y debe registrar los intereses generados.",
+    "consignas": [
+      "Registrar la operación inicial del préstamo.",
+      "Reconocer los intereses devengados.",
+      "Presentar la información en los estados financieros."
+    ],
+    "pdf": "pdfs/contabilidad-costos.pdf",
+    "tp": "tps/contabilidad-costos.pdf",
+    "precio": 38.0
+  },
+  {
+    "materia": "Contabilidad Avanzada",
+    "enunciado": "La compañía Delta absorbe a la empresa Epsilon en una fusión por integración.",
+    "consignas": [
+      "Registrar los asientos de fusión en la empresa adquirente.",
+      "Determinar la plusvalía generada.",
+      "Elaborar los estados financieros consolidados."
+    ],
+    "pdf": "pdfs/contabilidad-costos.pdf",
+    "tp": "tps/contabilidad-costos.pdf",
+    "precio": 45.0
+  },
+  {
+    "materia": "Contabilidad de Gestión",
+    "enunciado": "La empresa Zeta necesita evaluar la rentabilidad de sus tres líneas de producto.",
+    "consignas": [
+      "Calcular el margen de contribución de cada producto.",
+      "Identificar los costos fijos y variables.",
+      "Recomendar la mejor estrategia de ventas."
+    ],
+    "pdf": "pdfs/contabilidad-costos.pdf",
+    "tp": "tps/contabilidad-costos.pdf",
+    "precio": 42.0
+  },
+  {
+    "materia": "Auditoría Contable",
+    "enunciado": "Se requiere auditar el área de cuentas por cobrar de la empresa Omega.",
+    "consignas": [
+      "Verificar la existencia de los saldos.",
+      "Evaluar el control interno del área.",
+      "Emitir un informe de auditoría con conclusiones."
+    ],
+    "pdf": "pdfs/contabilidad-costos.pdf",
+    "tp": "tps/contabilidad-costos.pdf",
+    "precio": 50.0
+  },
+  {
+    "materia": "Contabilidad Pública",
+    "enunciado": "El municipio de Kappa debe registrar los ingresos y gastos del presupuesto anual.",
+    "consignas": [
+      "Registrar la ejecución presupuestaria.",
+      "Elaborar el estado de ejecución del presupuesto.",
+      "Analizar las variaciones significativas."
+    ],
+    "pdf": "pdfs/contabilidad-costos.pdf",
+    "tp": "tps/contabilidad-costos.pdf",
+    "precio": 37.0
+  },
+  {
+    "materia": "Normas Internacionales de Información Financiera (NIIF)",
+    "enunciado": "La empresa Lambda debe preparar sus estados financieros bajo NIIF.",
+    "consignas": [
+      "Convertir los estados financieros locales a NIIF.",
+      "Aplicar la NIIF 16 sobre arrendamientos.",
+      "Presentar el estado de situación financiera ajustado."
+    ],
+    "pdf": "pdfs/contabilidad-costos.pdf",
+    "tp": "tps/contabilidad-costos.pdf",
+    "precio": 55.0
+  }
+]
