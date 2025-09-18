@@ -38,7 +38,7 @@ app.post("/send_code", async (req, res) => {
       text: `Tu código de verificación es: ${code}`,
     });
 
-    res.json({ message: "Código enviado", code }); // ⚠️ en prod no devolver el código!
+    res.json({ message: "Código enviado" }); // ⚠️ en prod no devolver el código!
   } catch (error) {
     console.error("Error enviando correo:", error);
     res.status(500).json({ error: "No se pudo enviar el correo" });
