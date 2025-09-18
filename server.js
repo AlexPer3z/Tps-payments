@@ -15,11 +15,15 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-// Cargar trabajos.json
-const trabajosPath = path.join(process.cwd(), "trabajos.json");
+// 🔹 Ajuste para Render: usar ruta absoluta desde __dirname
+const trabajosPath = path.join(path.resolve(), "trabajos.json");
+if (!fs.existsSync(trabajosPath)) {
+  console.error("Error: trabajos.json no encontrado en", trabajosPath);
+  process.exit(1);
+}
 const trabajos = JSON.parse(fs.readFileSync(trabajosPath, "utf-8"));
 
-// Endpoint para enviar código al correo (solo código)
+// Endpoint para enviar código al correo
 app.post("/send_code", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Falta el correo" });
@@ -29,10 +33,7 @@ app.post("/send_code", async (req, res) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
     });
 
     await transporter.sendMail({
@@ -53,18 +54,12 @@ app.post("/send_code", async (req, res) => {
 app.post("/create_preference", async (req, res) => {
   try {
     const { items, back_urls, email } = req.body;
-
-    const preferenceData = {
-      items,
-      back_urls,
-      payer: { email },
-      auto_return: "approved",
-    };
+    const preferenceData = { items, back_urls, payer: { email }, auto_return: "approved" };
 
     const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(preferenceData),
@@ -85,7 +80,7 @@ app.post("/mp_webhook", async (req, res) => {
 
   // Verificar webhook usando la clave secreta
   const expectedSignature = crypto
-    .createHmac("sha256", process.env.MP_SECRET) // <-- clave secreta
+    .createHmac("sha256", process.env.MP_SECRET)
     .update(body)
     .digest("hex");
 
@@ -99,7 +94,6 @@ app.post("/mp_webhook", async (req, res) => {
   if (type === "payment") {
     const paymentId = data.id;
 
-    // Obtener info del pago desde Mercado Pago
     const paymentRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
       headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` },
     });
@@ -108,14 +102,16 @@ app.post("/mp_webhook", async (req, res) => {
     if (paymentInfo.status === "approved") {
       const email = paymentInfo.payer.email;
 
-      // Enviar TP al correo
-      const tpFilePath = path.join(process.cwd(), trabajos[0].tp);
+      // 🔹 Usar ruta absoluta del TP en Render
+      const tpFilePath = path.join(path.resolve(), trabajos[0].tp);
+      if (!fs.existsSync(tpFilePath)) {
+        console.error("TP no encontrado:", tpFilePath);
+        return res.status(500).send("TP no encontrado");
+      }
+
       const transporter = nodemailer.createTransport({
         service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
+        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
       });
 
       await transporter.sendMail({
@@ -123,12 +119,7 @@ app.post("/mp_webhook", async (req, res) => {
         to: email,
         subject: "Tu Trabajo Práctico",
         text: "Gracias por tu compra. Adjuntamos el TP.",
-        attachments: [
-          {
-            filename: path.basename(tpFilePath),
-            path: tpFilePath,
-          },
-        ],
+        attachments: [{ filename: path.basename(tpFilePath), path: tpFilePath }],
       });
 
       console.log(`TP enviado a ${email}`);
