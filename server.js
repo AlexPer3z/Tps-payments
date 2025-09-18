@@ -3,6 +3,8 @@ import cors from "cors";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -12,17 +14,18 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-// Endpoint para enviar código al correo
-// Endpoint para enviar código al correo
+// Cargar trabajos.json
+const trabajosPath = path.join(process.cwd(), "trabajos.json");
+const trabajos = JSON.parse(fs.readFileSync(trabajosPath, "utf-8"));
+
+// Endpoint para enviar código al correo (solo código)
 app.post("/send_code", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Falta el correo" });
 
-  // Generar código
   const code = Math.floor(100000 + Math.random() * 900000).toString();
 
   try {
-    // Configuración de transporte
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -31,7 +34,6 @@ app.post("/send_code", async (req, res) => {
       },
     });
 
-    // Enviar mail
     await transporter.sendMail({
       from: `"Trabajos Prácticos" <${process.env.EMAIL_USER}>`,
       to: email,
@@ -39,23 +41,22 @@ app.post("/send_code", async (req, res) => {
       text: `Tu código de verificación es: ${code}`,
     });
 
-    // Devolver el código al frontend
-    res.json({ message: "Código enviado", code }); // <-- ⚠️ devuelve el código
-  } catch (error) {
-    console.error("Error enviando correo:", error);
+    res.json({ message: "Código enviado", code });
+  } catch (err) {
+    console.error("Error enviando correo:", err);
     res.status(500).json({ error: "No se pudo enviar el correo" });
   }
 });
 
-
 // Endpoint Mercado Pago
 app.post("/create_preference", async (req, res) => {
   try {
-    const { items, back_urls } = req.body;
+    const { items, back_urls, email } = req.body;
 
     const preferenceData = {
       items,
       back_urls,
+      payer: { email },
       auto_return: "approved",
     };
 
@@ -76,6 +77,50 @@ app.post("/create_preference", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Webhook para recibir notificaciones de pago
+app.post("/mp_webhook", async (req, res) => {
+  const { type, data } = req.body;
+
+  if (type === "payment") {
+    const paymentId = data.id;
+
+    // Obtener info del pago desde Mercado Pago
+    const paymentRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+      headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` },
+    });
+    const paymentInfo = await paymentRes.json();
+
+    if (paymentInfo.status === "approved") {
+      const email = paymentInfo.payer.email;
+
+      // Enviar TP al correo
+      const tpFilePath = path.join(process.cwd(), trabajos[0].tp);
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"Trabajos Prácticos" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "Tu Trabajo Práctico",
+        text: "Gracias por tu compra. Adjuntamos el TP.",
+        attachments: [
+          {
+            filename: path.basename(tpFilePath),
+            path: tpFilePath,
+          },
+        ],
+      });
+
+      console.log(`TP enviado a ${email}`);
+    }
+  }
+
+  res.status(200).send("OK");
 });
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
