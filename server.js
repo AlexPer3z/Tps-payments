@@ -13,6 +13,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 // Endpoint para enviar código al correo
+// Endpoint para enviar código al correo
 app.post("/send_code", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Falta el correo" });
@@ -25,8 +26,8 @@ app.post("/send_code", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER, // tu correo Gmail
-        pass: process.env.EMAIL_PASS, // contraseña o App Password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
@@ -38,12 +39,14 @@ app.post("/send_code", async (req, res) => {
       text: `Tu código de verificación es: ${code}`,
     });
 
-    res.json({ message: "Código enviado" }); // ⚠️ en prod no devolver el código!
+    // Devolver el código al frontend
+    res.json({ message: "Código enviado", code }); // <-- ⚠️ devuelve el código
   } catch (error) {
     console.error("Error enviando correo:", error);
     res.status(500).json({ error: "No se pudo enviar el correo" });
   }
 });
+
 
 // Endpoint Mercado Pago
 app.post("/create_preference", async (req, res) => {
